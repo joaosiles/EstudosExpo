@@ -1,3 +1,4 @@
+import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 
 const firebaseConfig = {
@@ -9,3 +10,17 @@ const firebaseConfig = {
   appId: process.env.EXPO_PUBLIC_APP_ID,
 };
 
+firebase.initializeApp(firebaseConfig);
+
+export async function GET(request: Request) {
+  const nomesCollection = firebase.firestore().collection('Nomes');
+        const snapshot = await nomesCollection.get();
+  
+        const data: { id: string; }[] = [];
+        snapshot.forEach((doc) => {
+          data.push({ id: doc.id, ...doc.data() });
+        });
+  console.log('dados',data)
+  return Response.json(data);
+  // return Response.json({ hello: 'world' });
+}

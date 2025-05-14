@@ -15,7 +15,7 @@ firebase.initializeApp(firebaseConfig);
 
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
 
 export default function App() {
   const [nomes, setNomes] = useState([]);
@@ -25,7 +25,7 @@ export default function App() {
       const nomesCollection = firebase.firestore().collection('Nomes');
       const snapshot = await nomesCollection.get();
 
-      const data = [];
+      const data: ((prevState: never[]) => never[]) | { id: string; }[] = [];
       snapshot.forEach((doc) => {
         data.push({ id: doc.id, ...doc.data() });
       });
