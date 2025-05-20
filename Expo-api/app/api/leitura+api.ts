@@ -1,13 +1,18 @@
 import firebase from '../../firebase-connect';
 
 export async function GET(request: Request) {
-  const nomesCollection = firebase.firestore().collection('Nomes');
-  const snapshot = await nomesCollection.get();
-
-  const data: ((prevState: never[]) => never[]) | { id: string; }[] = [];
-  snapshot.forEach((doc) => {
-    data.push({ id: doc.id, ...doc.data() });
-  });
-  return Response.json(data);
-  // return Response.json({ hello: 'world' });
+  try {  
+    let data = { msg: 'Olá, mundo!' };
+    // Retorna os dados no formato JSON
+    return new Response(JSON.stringify(data.msg), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (error) {
+    // Retorna um erro caso algo dê errado
+    return new Response(JSON.stringify({ error: 'Erro ao buscar dados', details: 'error.message' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 }

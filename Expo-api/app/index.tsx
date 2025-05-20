@@ -1,6 +1,6 @@
-import firebase from '../firebase-connect';
 import React, { useEffect, useState } from 'react';
 import { FlatList, Text, View } from 'react-native';
+import firebase from '../firebase-connect';
 
 export default function App() {
   const [nomes, setNomes] = useState([]);
