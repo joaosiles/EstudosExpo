@@ -1,5 +1,7 @@
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
+import { getFirestore } from 'firebase/firestore';
+import { initializeApp } from 'firebase/app';
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_API_KEY,
@@ -13,5 +15,7 @@ const firebaseConfig = {
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-export default firebase;
+export { firebase, db };

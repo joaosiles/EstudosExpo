@@ -1,16 +1,16 @@
-import firebase from '../../firebase-connect';
+const request_endpoint = 'http://localhost:3000/leitura';
 
 export async function GET(request: Request) {
-  try {  
-    let data = { msg: 'Olá, mundo!' };
-    // Retorna os dados no formato JSON
-    return new Response(JSON.stringify(data.msg), {
+  try {
+    const response = await fetch(request_endpoint);
+    const data = await response.json();
+
+    return new Response(JSON.stringify(data), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
-  } catch (error) {
-    // Retorna um erro caso algo dê errado
-    return new Response(JSON.stringify({ error: 'Erro ao buscar dados', details: 'error.message' }), {
+  } catch (error: any) {
+    return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
