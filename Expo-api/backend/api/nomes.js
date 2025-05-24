@@ -19,4 +19,20 @@ router.get('/nomes', async (req, res) => {
   }
 });
 
+router.post('/nomes', async (req, res) => {
+  res.send('POST nomes')
+});
+
+router.delete('/nomes', async (req, res) => {
+  res.send('DELETE nomes')
+});
+
+router.put('/nomes', async (req, res) => {
+  res.send('PUT nomes')
+});
+
+router.get('/nome', async (req, res) => {
+  res.send('GET nomes')
+});
+
 module.exports = router;
