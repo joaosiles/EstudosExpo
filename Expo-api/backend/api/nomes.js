@@ -2,7 +2,7 @@ const express = require('express');
 const firebase = require('../firebase-admin-connect');
 const router = express.Router();
 
-router.get('/leitura', async (req, res) => {
+router.get('/nomes', async (req, res) => {
   try {
     const db = firebase.firestore();
     const nomesCollection = db.collection('Nomes');

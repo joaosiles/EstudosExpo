@@ -12,7 +12,7 @@ export default function App() {
 
   async function fetchUsuarios() {
     try {
-      const response = await fetch('/api/leitura');
+      const response = await fetch('/api/nomes');
       const snapshot = await response.json();
 
       const usuarios: Usuario[] = snapshot.map((usuario: any) => ({

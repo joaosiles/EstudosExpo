@@ -1,4 +1,4 @@
-const request_endpoint = 'http://localhost:3000/leitura';
+const request_endpoint = 'http://localhost:3000/nomes';
 
 export async function GET(request: Request) {
   try {

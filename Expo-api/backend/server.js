@@ -8,8 +8,8 @@ app.use(cors());
 app.use(express.json());
 
 //importando as rotas
-const leituraRoute = require('./api/leitura');
-app.use('/', leituraRoute);
+const nomesRoute = require('./api/nomes');
+app.use('/', nomesRoute);
 
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
