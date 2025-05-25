@@ -54,8 +54,7 @@ router.post('/nomes', async (req, res) => {
   }
 });
 
-router.delete('/nomes', async (req, res) => {
-  // res.send('DELETE nomes')
+router.delete('/nomes', async (req, res) => {  
   const nomesCollection = firebase.firestore().collection('Nomes');
   
   const snapshot = await nomesCollection
@@ -99,7 +98,52 @@ router.put('/nomes', async (req, res) => {
 });
 
 router.get('/nome', async (req, res) => {
-  res.send('GET nomes')
+  const nomesCollection = firebase.firestore().collection('Nomes');
+
+  if (!req.body) {
+    return res.status(400).json({
+      error: "MissingFields",
+      message: "One of request body fields are required."
+    }); 
+  }
+
+  try {
+    const results = new Map();
+
+    if (req.body.nome) {
+      const [nomeSnapshot] = await Promise.all([
+        nomesCollection.where('Nome', '==', req.body.nome).get()        
+      ]);
+      nomeSnapshot.forEach(doc => {
+        results.set(doc.id, { id: doc.id, ...doc.data() });
+      });
+    }
+
+    if (req.body.sobrenome) {
+      const [sobrenomeSnapshot] = await Promise.all([
+        nomesCollection.where('Sobrenome', '==', req.body.sobrenome).get()        
+      ]);
+      sobrenomeSnapshot.forEach(doc => {
+        results.set(doc.id, { id: doc.id, ...doc.data() });
+      });
+    }
+
+    const finalResults = Array.from(results.values());
+
+    console.log(finalResults);
+
+    res.status(200).json({
+      finalResults,
+      message: "Success"
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({
+      content: req.body,
+      message: "Internal Server Error"
+    });
+  }
 });
 
 module.exports = router;
