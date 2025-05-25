@@ -55,7 +55,43 @@ router.post('/nomes', async (req, res) => {
 });
 
 router.delete('/nomes', async (req, res) => {
-  res.send('DELETE nomes')
+  // res.send('DELETE nomes')
+  const nomesCollection = firebase.firestore().collection('Nomes');
+  
+  const snapshot = await nomesCollection
+  .where('Nome', '==', req.body.nome)
+  .where('Sobrenome', '==', req.body.sobrenome)
+  .get();
+
+  if (snapshot.empty) {
+    return res.status(404).json({
+      content: req.body,
+      message: 'No matching documents found',
+    });
+  }
+
+  if (!req.body.nome || !req.body.sobrenome) {
+    return res.status(400).json({
+      error: "MissingFields",
+      message: "All request body fields are required."
+    }); 
+  }
+
+  try {
+    snapshot.forEach(async (doc) => {
+      await nomesCollection.doc(doc.id).delete();
+    });    
+    res.status(200).json({
+      content: req.body, 
+      message: "Register deleted with success"      
+    },);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({
+      content: req.body,
+      message: "Internal Server Error"
+    });
+  }
 });
 
 router.put('/nomes', async (req, res) => {
