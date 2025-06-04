@@ -2,7 +2,7 @@ const express = require('express');
 const firebase = require('../firebase-admin-connect');
 const router = express.Router();
 router.use(express.json());
-router.use(express.urlencoded({ extended: true }))
+router.use(express.urlencoded({ extended: true }));
 
 router.get('/nomes', async (req, res) => {
   try {
@@ -57,6 +57,13 @@ router.post('/nomes', async (req, res) => {
 router.delete('/nomes', async (req, res) => {  
   const nomesCollection = firebase.firestore().collection('Nomes');
   
+  if (!req.body.nome || !req.body.sobrenome) {
+    return res.status(400).json({
+      error: "MissingFields",
+      message: "All request body fields are required."
+    }); 
+  }
+
   const snapshot = await nomesCollection
   .where('Nome', '==', req.body.nome)
   .where('Sobrenome', '==', req.body.sobrenome)
@@ -67,13 +74,6 @@ router.delete('/nomes', async (req, res) => {
       content: req.body,
       message: 'No matching documents found',
     });
-  }
-
-  if (!req.body.nome || !req.body.sobrenome) {
-    return res.status(400).json({
-      error: "MissingFields",
-      message: "All request body fields are required."
-    }); 
   }
 
   try {
@@ -94,8 +94,50 @@ router.delete('/nomes', async (req, res) => {
 });
 
 router.put('/nomes', async (req, res) => {
-  res.send('PUT nomes')
+  const nomesCollection = firebase.firestore().collection('Nomes');
+
+  if (!req.body.nome || !req.body.sobrenome) {
+    return res.status(400).json({
+      error: "MissingFields",
+      message: "All fields are required."
+    }); 
+  }
+
+  try {
+    const snapshot = await nomesCollection
+      .where('Nome', '==', req.body.nome)
+      .where('Sobrenome', '==', req.body.sobrenome)
+      .get();
+
+    if (snapshot.empty) {
+      return res.status(404).json({
+        message: "No matching documents found."
+      });
+    }
+
+    const results = [];
+
+    snapshot.forEach(doc => {
+      results.push({ id: doc.id, ...doc.data() });
+    });
+
+    console.log('Results:', results);
+
+    res.status(200).json({
+      message: "Success",
+      data: results
+    });
+
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({
+      error: "InternalServerError",
+      content: req.body,
+      message: "Something went wrong."
+    });
+  }
 });
+
 
 router.get('/nome', async (req, res) => {
   const nomesCollection = firebase.firestore().collection('Nomes');
@@ -116,7 +158,7 @@ router.get('/nome', async (req, res) => {
       ]);
       nomeSnapshot.forEach(doc => {
         results.set(doc.id, { id: doc.id, ...doc.data() });
-      });
+      });      
     }
 
     if (req.body.sobrenome) {
