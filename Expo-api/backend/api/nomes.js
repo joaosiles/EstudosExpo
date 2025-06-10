@@ -96,17 +96,19 @@ router.delete('/nomes', async (req, res) => {
 router.put('/nomes', async (req, res) => {
   const nomesCollection = firebase.firestore().collection('Nomes');
 
-  if (!req.body.nome || !req.body.sobrenome) {
+  const { nome, sobrenome, novoNome, novoSobrenome } = req.body;
+
+  if (!nome || !sobrenome || (!novoNome && !novoSobrenome)) {
     return res.status(400).json({
       error: "MissingFields",
-      message: "All fields are required."
+      message: "nome, sobrenome e pelo menos novoNome ou novoSobrenome são obrigatórios."
     }); 
   }
 
   try {
     const snapshot = await nomesCollection
-      .where('Nome', '==', req.body.nome)
-      .where('Sobrenome', '==', req.body.sobrenome)
+      .where('Nome', '==', nome)
+      .where('Sobrenome', '==', sobrenome)
       .get();
 
     if (snapshot.empty) {
@@ -115,17 +117,24 @@ router.put('/nomes', async (req, res) => {
       });
     }
 
-    const results = [];
+    const updates = [];
 
     snapshot.forEach(doc => {
-      results.push({ id: doc.id, ...doc.data() });
+      const updatedData = {};
+      if (novoNome) updatedData.Nome = novoNome;
+      if (novoSobrenome) updatedData.Sobrenome = novoSobrenome;
+
+      updates.push(
+        nomesCollection.doc(doc.id).update(updatedData)
+      );
     });
 
-    console.log('Results:', results);
+    await Promise.all(updates);
 
     res.status(200).json({
-      message: "Success",
-      data: results
+      message: "Documents updated successfully",
+      updatedFields: { novoNome, novoSobrenome },
+      matched: snapshot.size
     });
 
   } catch (error) {
